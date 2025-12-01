@@ -1,36 +1,55 @@
+# ---- BUILD ARGUMENTS ----
+
+ARG RAILS_MASTER_KEY
+
 # ---- BUILDER ----
+
 FROM ruby:3.2 as builder
 
 WORKDIR /app
 
-RUN apt-get update -qq && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    nodejs \
-    yarn
+# Passa o master key e define ambiente de produção
+
+ARG RAILS_MASTER_KEY
+ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+ENV RAILS_ENV=production
+
+# Dependências do sistema
+
+RUN apt-get update -qq && apt-get install -y 
+build-essential 
+libpq-dev 
+nodejs 
+yarn
+
+# Gemfile
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --without development test
 
+# Copia todo o código
+
 COPY . .
 
-RUN RAILS_ENV=production bundle exec rake assets:precompile
+# Precompile dos assets
+
+RUN bundle exec rake assets:precompile
 
 # ---- FINAL IMAGE ----
+
 FROM ruby:3.2
 
 WORKDIR /app
 
-RUN apt-get update -qq && apt-get install -y \
-    libpq-dev \
-    nodejs \
-    yarn
+# Dependências de runtime
+
+RUN apt-get update -qq && apt-get install -y libpq-dev nodejs
+
+# Copia do builder
 
 COPY --from=builder /app /app
 
-ENV RAILS_ENV=production
-ENV RACK_ENV=production
+# Porta e comando padrão
 
 EXPOSE 3000
-
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
