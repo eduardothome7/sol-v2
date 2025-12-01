@@ -4,12 +4,12 @@ FROM ruby:3.2 AS builder
 
 # Instala dependências do sistema
 
-RUN apt-get update -qq && apt-get install -y 
-build-essential
-libpq-dev 
-nodejs 
-curl 
-gnupg
+RUN apt-get update -qq && apt-get install -y \
+  build-essential \
+  libpq-dev \
+  nodejs \
+  curl \
+  gnupg
 
 # Adiciona repositório oficial do Yarn e instala
 
