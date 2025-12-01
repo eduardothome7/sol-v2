@@ -49,5 +49,6 @@ ENV PATH="/usr/local/bundle/bin:${PATH}"
 EXPOSE 3000
 
 # Comando padrão
+RUN chmod +x bin/*
 
 CMD ["bin/rails", "server", "-e", "production", "-p", "3000", "-b", "0.0.0.0"]
