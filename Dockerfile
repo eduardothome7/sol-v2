@@ -50,4 +50,4 @@ EXPOSE 3000
 
 # Comando padrão
 
-CMD ["bundle", "exec", "rails", "server", "-e", "production", "-p", "3000", "-b", "0.0.0.0"]
+CMD ["bin/rails", "server", "-e", "production", "-p", "3000", "-b", "0.0.0.0"]
