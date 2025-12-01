@@ -13,10 +13,10 @@ RUN apt-get update -qq && apt-get install -y \
 
 # Adiciona repositório oficial do Yarn e instala
 
-RUN curl -sS [https://dl.yarnpkg.com/debian/pubkey.gpg](https://dl.yarnpkg.com/debian/pubkey.gpg) | gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg 
-&& echo "deb [signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] [https://dl.yarnpkg.com/debian](https://dl.yarnpkg.com/debian) stable main" 
-> /etc/apt/sources.list.d/yarn.list 
-&& apt-get update -qq && apt-get install -y yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] https://dl.yarnpkg.com/debian stable main" \
+       > /etc/apt/sources.list.d/yarn.list \
+    && apt-get update -qq && apt-get install -y yarn
 
 WORKDIR /app
 
