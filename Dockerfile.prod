@@ -8,12 +8,6 @@ FROM ruby:3.2 as builder
 
 WORKDIR /app
 
-# Passa o master key e define ambiente de produção
-
-ARG RAILS_MASTER_KEY
-ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
-ENV RAILS_ENV=production
-
 # Dependências do sistema
 
 RUN apt-get update -qq && apt-get install -y 
@@ -22,7 +16,7 @@ libpq-dev
 nodejs 
 yarn
 
-# Gemfile
+# Copia apenas Gemfile primeiro para instalar gems
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install --without development test
@@ -31,9 +25,16 @@ RUN bundle install --without development test
 
 COPY . .
 
-# Precompile dos assets
+# Passa a master key e define ambiente de produção antes de precompilar
 
-RUN bundle exec rake assets:precompile
+ARG RAILS_MASTER_KEY
+ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+ENV RAILS_ENV=production
+
+# Força recompilação dos assets sempre
+
+RUN bundle exec rails assets:clobber
+RUN bundle exec rails assets:precompile
 
 # ---- FINAL IMAGE ----
 
