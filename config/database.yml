@@ -1,0 +1,42 @@
+# SQLite default configuration
+default: &default
+  adapter: sqlite3
+  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  <<: *default
+  database: storage/development.sqlite3
+
+test:
+  <<: *default
+  database: storage/test.sqlite3
+
+# PRODUCTION: PostgreSQL (primary) + SQLite (cache/queue/cable)
+production:
+  primary:
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+    max_connections: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+    
+    username: <%= ENV.fetch("DB_USERNAME", "solmmerce_user") %>
+    password: <%= ENV.fetch("DB_PASSWORD", "S1o2l3@@##!") %>
+    host:     <%= ENV.fetch("DB_HOST", "localhost") %>
+    port:     <%= ENV.fetch("DB_PORT", 5432) %>
+    database: <%= ENV.fetch("DB_NAME", "solmmerce_bd") %>
+
+  cache:
+    <<: *default
+    database: storage/production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+
+  queue:
+    <<: *default
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate
+
+  cable:
+    <<: *default
+    database: storage/production_cable.sqlite3
+    migrations_paths: db/cable_migrate

@@ -1,0 +1,36 @@
+# ---- BUILDER ----
+FROM ruby:3.2 as builder
+
+WORKDIR /app
+
+RUN apt-get update -qq && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    nodejs \
+    yarn
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install --without development test
+
+COPY . .
+
+RUN RAILS_ENV=production bundle exec rake assets:precompile
+
+# ---- FINAL IMAGE ----
+FROM ruby:3.2
+
+WORKDIR /app
+
+RUN apt-get update -qq && apt-get install -y \
+    libpq-dev \
+    nodejs \
+    yarn
+
+COPY --from=builder /app /app
+
+ENV RAILS_ENV=production
+ENV RACK_ENV=production
+
+EXPOSE 3000
+
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
